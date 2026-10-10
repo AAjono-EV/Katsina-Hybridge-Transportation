@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description"
+        content="Katsina State Smart Vehicle Tracking and Arrival Prediction System">
+
+  <title>KATSVTAP | Smart Vehicle Tracking</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+
+    <a class="brand" href="#" data-view="home">
+      <span class="brand-icon">
+        <i class="fa-solid fa-bus-simple"></i>
+      </span>
+
+      <span>
+        <strong>KATSVTAP</strong>
+        <small>Smart Vehicle Tracking</small>
+      </span>
+    </a>
+
+    <button class="mobile-menu" id="mobileMenuBtn"
+            aria-label="Open navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <nav class="top-nav" id="topNav">
+
+      <button class="nav-link active" data-view="home">
+        <i class="fa-solid fa-house"></i>
+        Home
+      </button>
+
+      <button class="nav-link" data-view="nearby">
+        <i class="fa-solid fa-location-dot"></i>
+        Nearby Vehicles
+      </button>
+
+      <button class="nav-link" data-view="map">
+        <i class="fa-solid fa-map"></i>
+        Map
+      </button>
+
+      <button class="nav-link" data-view="notifications">
+        <i class="fa-regular fa-bell"></i>
+        Notifications
+        <span class="nav-count" id="notificationCount">0</span>
+      </button>
+
+    </nav>
+
+    <div class="account-area">
+
+      <span class="user-avatar">
+        <i class="fa-regular fa-user"></i>
+      </span>
+
+      <span class="account-name" id="accountName">Guest</span>
+
+      <button class="btn btn-outline btn-small" id="authButton">
+        Sign in
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="page-wrap">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+
+      <div class="hero-copy">
+
+        <span class="eyebrow">
+          <i class="fa-solid fa-satellite-dish"></i>
+          KATSINA STATE TRANSPORT
+        </span>
+
+        <h1>
+          Know your ride.<br>
+          <span>Before it arrives.</span>
+        </h1>
+
+        <p>
+          Find approaching vehicles, check the remaining distance,
+          and estimate when your ride will reach your bus stop.
+        </p>
+
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <i class="fa-solid fa-bus-simple"></i>
+        <span class="route-line"></span>
+        <span class="route-dot"></span>
+      </div>
+
+    </section>
+
+
+    <!-- HOME PAGE -->
+    <section class="view-section" id="view-home">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">YOUR JOURNEY</p>
+
+          <h2>Find an approaching vehicle</h2>
+
+          <p class="muted">
+            Choose your bus stop to see vehicles heading towards it.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- BUS STOP SEARCH -->
+      <div class="search-panel">
+
+        <label for="busStopSelect">
+          Select your bus stop
+        </label>
+
+        <div class="search-row">
+
+          <div class="select-wrap">
+            <i class="fa-solid fa-location-dot"></i>
+
+            <select id="busStopSelect"
+                    aria-label="Select bus stop">
+            </select>
+          </div>
+
+          <button class="btn btn-primary" id="findVehicleBtn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Find vehicles
+          </button>
+
+          <button class="btn btn-light" id="useLocationBtn">
+            <i class="fa-solid fa-crosshairs"></i>
+            My location
+          </button>
+
+        </div>
+
+        <p class="help-text" id="locationMessage">
+          Select a bus stop to view approaching vehicles.
+        </p>
+
+      </div>
+
+
+      <!-- STATISTICS -->
+      <div class="stat-grid">
+
+        <article class="stat-card">
+
+          <span class="stat-icon green">
+            <i class="fa-solid fa-bus"></i>
+          </span>
+
+          <div>
+            <p>Vehicles nearby</p>
+            <h3 id="nearbyCount">0</h3>
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span class="stat-icon blue">
+            <i class="fa-solid fa-route"></i>
+          </span>
+
+          <div>
+            <p>Nearest distance</p>
+            <h3 id="nearestDistance">-- <small>km</small></h3>
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span class="stat-icon orange">
+            <i class="fa-regular fa-clock"></i>
+          </span>
+
+          <div>
+            <p>Estimated arrival</p>
+            <h3 id="nearestEta">-- <small>min</small></h3>
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- NEAREST VEHICLE AND MINI MAP -->
+      <div class="content-grid">
+
+        <section class="panel nearest-panel">
+
+          <div class="panel-heading">
+
+            <div>
+              <span class="panel-kicker">BEST MATCH</span>
+              <h3>Nearest approaching vehicle</h3>
+            </div>
+
+            <span class="live-indicator">
+              <span></span>
+              Tracking updates
+            </span>
+
+          </div>
+
+          <div id="nearestVehicleCard" class="nearest-empty">
+
+            <span class="empty-icon">
+              <i class="fa-solid fa-bus-simple"></i>
+            </span>
+
+            <h4>Finding vehicles</h4>
+
+            <p>
+              Select a bus stop to view the nearest approaching vehicle.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <section class="panel mini-map-panel">
+
+          <div class="panel-heading">
+
+            <div>
+              <span class="panel-kicker">LOCATION</span>
+              <h3>Bus stop map</h3>
+            </div>
+
+            <button class="text-button" data-view="map">
+              Open map
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+          </div>
+
+          <div id="miniMap" class="map-box"></div>
+
+        </section>
+
+      </div>
+
+
+      <!-- VEHICLES ON HOME PAGE -->
+      <section class="panel vehicles-panel">
+
+        <div class="panel-heading">
+
+          <div>
+            <span class="panel-kicker">ON YOUR ROUTE</span>
+            <h3>Approaching vehicles</h3>
+          </div>
+
+          <button class="text-button" data-view="nearby">
+            View all
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+        </div>
+
+        <div id="homeVehicleList" class="vehicle-list"></div>
+
+      </section>
+
+    </section>
+
+
+    <!-- NEARBY VEHICLES PAGE -->
+    <section class="view-section hidden" id="view-nearby">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">VEHICLE DIRECTORY</p>
+
+          <h2>Nearby vehicles</h2>
+
+          <p class="muted">
+            Vehicles estimated to be approaching your selected bus stop.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="toolbar">
+
+        <div class="select-wrap">
+
+          <i class="fa-solid fa-location-dot"></i>
+
+          <select id="nearbyStopSelect"
+                  aria-label="Bus stop for nearby vehicles">
+          </select>
+
+        </div>
+
+
+        <div class="select-wrap">
+
+          <i class="fa-solid fa-arrow-down-wide-short"></i>
+
+          <select id="sortVehicles">
+
+            <option value="distance">Sort by nearest</option>
+            <option value="eta">Sort by arrival time</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <div id="allVehicleList" class="vehicle-list"></div>
+
+    </section>
+
+
+    <!-- MAP PAGE -->
+    <section class="view-section hidden" id="view-map">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">ROUTE OVERVIEW</p>
+
+          <h2>Vehicle map</h2>
+
+          <p class="muted">
+            Explore the selected bus stop and approaching vehicles.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="toolbar">
+
+        <div class="select-wrap">
+
+          <i class="fa-solid fa-location-dot"></i>
+
+          <select id="mapStopSelect"
+                  aria-label="Bus stop on map">
+          </select>
+
+        </div>
+
+      </div>
+
+      <div id="mainMap" class="map-large"></div>
+
+      <p class="map-caption">
+        <i class="fa-solid fa-circle-info"></i>
+        Arrival estimates update periodically.
+      </p>
+
+    </section>
+
+
+    <!-- NOTIFICATIONS PAGE -->
+    <section class="view-section hidden" id="view-notifications">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">TRAVEL UPDATES</p>
+
+          <h2>Notifications</h2>
+
+          <p class="muted">
+            Travel updates for your selected bus stop.
+          </p>
+        </div>
+
+        <button class="btn btn-light" id="clearNotificationsBtn">
+          <i class="fa-regular fa-trash-can"></i>
+          Clear all
+        </button>
+
+      </div>
+
+      <div class="panel" id="notificationList"></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="footer-brand">
+      <i class="fa-solid fa-bus-simple"></i>
+      KATSVTAP
+    </div>
+
+    <p>
+      Katsina State Smart Vehicle Tracking and Arrival Prediction System
+    </p>
+
+  </footer>
+
+
+  <!-- SIGN-IN AND REGISTRATION MODAL -->
+  <div class="modal-backdrop hidden"
+       id="authModal"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="authTitle">
+
+    <div class="modal-card">
+
+      <button class="modal-close"
+              id="closeAuthModal"
+              aria-label="Close">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </button>
+
+
+      <div class="modal-brand">
+
+        <span class="brand-icon">
+          <i class="fa-solid fa-bus-simple"></i>
+        </span>
+
+      </div>
+
+
+      <h2 id="authTitle">Welcome back</h2>
+
+      <p class="muted" id="authSubtitle">
+        Sign in to personalise your journey.
+      </p>
+
+
+      <div class="auth-tabs">
+
+        <button class="auth-tab active" data-auth-mode="login">
+          Sign in
+        </button>
+
+        <button class="auth-tab" data-auth-mode="register">
+          Create account
+        </button>
+
+      </div>
+
+
+      <form id="authForm">
+
+        <div class="form-field hidden" id="fullNameField">
+
+          <label for="fullName">Full name</label>
+
+          <input id="fullName"
+                 type="text"
+                 autocomplete="name"
+                 placeholder="Enter your full name">
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="authEmail">Email address</label>
+
+          <input id="authEmail"
+                 type="email"
+                 autocomplete="email"
+                 placeholder="you@example.com"
+                 required>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="authPassword">Password</label>
+
+          <input id="authPassword"
+                 type="password"
+                 autocomplete="current-password"
+                 placeholder="At least 6 characters"
+                 minlength="6"
+                 required>
+
+        </div>
+
+
+        <p class="form-message" id="authMessage" aria-live="polite"></p>
+
+
+        <button class="btn btn-primary full-width"
+                type="submit"
+                id="authSubmit">
+
+          Sign in
+
+        </button>
+
+      </form>
+
+      <p class="auth-note">
+        Account details are stored in this browser.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT LIBRARIES -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- APPLICATION JAVASCRIPT -->
+  <script src="js/user.js"></script>
+
+</body>
+</html>
