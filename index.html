@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KATSVTAP | Smart Vehicle Tracking</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="navbar">
+
+        <a href="#" class="brand" id="homeLogo">
+            <div class="brand-icon">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div class="brand-text">
+                <h1>KATSVTAP</h1>
+                <p>Smart Vehicle Tracking</p>
+            </div>
+        </a>
+
+        <button class="menu-button" id="menuButton"
+                aria-label="Open navigation menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="nav-actions">
+            <button class="profile-button" id="profileButton"
+                    aria-label="User account">
+                <i class="fa-regular fa-user"></i>
+            </button>
+
+            <button class="signin-button" id="signInButton">
+                Sign in
+            </button>
+        </div>
+
+    </header>
+
+    <!-- MOBILE MENU -->
+    <nav class="mobile-menu" id="mobileMenu">
+        <a href="#" id="menuHome">Home</a>
+        <a href="#" id="menuSearch">Find a Vehicle</a>
+        <a href="#" id="menuResults">Vehicle Results</a>
+        <button id="mobileSignInButton">Sign in</button>
+    </nav>
+
+
+    <!-- =====================================
+         HOME AND SEARCH INTERFACE
+    ====================================== -->
+
+    <main class="container page-view" id="searchView">
+
+        <!-- HERO -->
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-eyebrow">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    <span>KATSINA STATE TRANSPORT</span>
+                </div>
+
+                <h2>
+                    Know your ride.<br>
+                    <span>Before it arrives.</span>
+                </h2>
+
+                <p>
+                    Find approaching vehicles, check the remaining distance,
+                    and estimate when your ride will reach your bus stop.
+                </p>
+
+            </div>
+
+            <div class="hero-bus">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <div class="road-line"></div>
+
+        </section>
+
+
+        <!-- JOURNEY SEARCH -->
+        <section class="journey-section" id="journey">
+
+            <div class="section-label">YOUR JOURNEY</div>
+
+            <h2 class="section-title">
+                Find an approaching vehicle
+            </h2>
+
+            <p class="section-description">
+                Choose your bus stop to see vehicles heading towards it.
+            </p>
+
+            <div class="search-card">
+
+                <label for="busStop">
+                    Select your bus stop
+                </label>
+
+                <div class="select-wrapper">
+
+                    <i class="fa-solid fa-location-dot location-icon"></i>
+
+                    <select id="busStop">
+                        <option value="Kofar Marusa">Kofar Marusa</option>
+                        <option value="Katsina Central">Katsina Central</option>
+                        <option value="Central Market">Central Market</option>
+                        <option value="Kofar Sauri">Kofar Sauri</option>
+                        <option value="Kofar Kaura">Kofar Kaura</option>
+                        <option value="Government House">Government House</option>
+                        <option value="Funtua Road">Funtua Road</option>
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down select-arrow"></i>
+
+                </div>
+
+                <button class="find-button" id="findVehiclesButton">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Find Vehicles</span>
+                </button>
+
+                <button class="location-button" id="myLocationButton">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <span>My Location</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- INTRODUCTION -->
+        <section class="intro-section">
+
+            <div class="intro-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <div>
+                <h3>Plan your journey smarter</h3>
+
+                <p>
+                    Check approaching vehicles, available seats,
+                    estimated arrival times and remaining distances
+                    before heading to your bus stop.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================
+         VEHICLE RESULTS INTERFACE
+    ====================================== -->
+
+    <main class="container page-view hidden" id="resultsView">
+
+        <!-- RESULTS HEADER -->
+        <section class="results-hero">
+
+            <button class="back-button" id="backToSearch">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Search
+            </button>
+
+            <div class="results-hero-content">
+
+                <span class="results-eyebrow">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                    KATSINA STATE TRANSPORT
+                </span>
+
+                <h2>Approaching Vehicles</h2>
+
+                <p>
+                    Find the nearest vehicles heading towards your selected stop.
+                </p>
+
+                <div class="destination-pill">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Destination:
+                    <strong id="selectedStopName">Kofar Marusa</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             MAP FIRST: MOBILE AND DESKTOP
+        ====================================== -->
+
+        <section class="map-section" id="vehicleMapSection">
+
+            <div class="map-heading">
+
+                <div>
+                    <div class="section-label">EXPLORE KATSINA</div>
+
+                    <h2>Vehicle Tracking Map</h2>
+
+                    <p class="section-description">
+                        Select a vehicle to view its position.
+                    </p>
+                </div>
+
+                <div class="map-heading-icon">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+
+            </div>
+
+            <!-- Existing Leaflet map -->
+            <div id="map" aria-label="Vehicle tracking map"></div>
+
+            <div class="map-legend">
+
+                <span>
+                    <i class="fa-solid fa-location-dot stop-legend"></i>
+                    Bus stop
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-bus vehicle-legend"></i>
+                    Vehicles
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-location-crosshairs user-legend"></i>
+                    Your location
+                </span>
+
+            </div>
+
+            <p class="map-note">
+                <i class="fa-solid fa-circle-info"></i>
+                Vehicle positions and arrival estimates are illustrative
+                and are not live GPS tracking data.
+            </p>
+
+        </section>
+
+
+
+        <!-- =====================================
+             JOURNEY INFORMATION
+             DISPLAYED BELOW THE MAP
+        ====================================== -->
+
+        <section class="results-section" id="journeyInformation">
+
+            <div class="results-heading">
+
+                <div>
+                    <div class="section-label">YOUR JOURNEY</div>
+
+                    <h2>Journey Information</h2>
+
+                    <p class="section-description">
+                        Check the estimated fare, remaining distance,
+                        and arrival time.
+                    </p>
+                </div>
+
+                <span class="results-count" id="resultsCount">
+                    7 vehicles
+                </span>
+
+            </div>
+
+
+            <!-- JOURNEY SUMMARY CARDS -->
+            <div class="summary-grid">
+
+                <!-- VEHICLES FOUND -->
+                <div class="summary-card">
+
+                    <div class="summary-icon green">
+                        <i class="fa-solid fa-bus"></i>
+                    </div>
+
+                    <div>
+                        <span>Vehicles Found</span>
+                        <h3 id="summaryVehicles">7</h3>
+                    </div>
+
+                </div>
+
+
+                <!-- ESTIMATED PRICE -->
+                <div class="summary-card">
+
+                    <div class="summary-icon green">
+                        <i class="fa-solid fa-naira-sign"></i>
+                    </div>
+
+                    <div>
+                        <span>Estimated Price</span>
+                        <h3 id="summaryPrice">₦--</h3>
+                    </div>
+
+                </div>
+
+
+                <!-- REMAINING DISTANCE -->
+                <div class="summary-card">
+
+                    <div class="summary-icon blue">
+                        <i class="fa-solid fa-location-arrow"></i>
+                    </div>
+
+                    <div>
+                        <span>Remaining Distance</span>
+                        <h3 id="summaryDistance">-- km</h3>
+                    </div>
+
+                </div>
+
+
+                <!-- ARRIVAL TIME -->
+                <div class="summary-card">
+
+                    <div class="summary-icon orange">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+
+                    <div>
+                        <span>Estimated Arrival</span>
+                        <h3 id="summaryArrival">-- min</h3>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULTS DESCRIPTION -->
+            <div class="results-description-box">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <p id="resultsDescription">
+                    Showing vehicles near Kofar Marusa.
+                </p>
+
+            </div>
+
+
+            <!-- APPROACHING VEHICLE LIST -->
+            <section class="approaching-vehicles-section">
+
+                <div class="vehicle-list-heading">
+                    <div>
+                        <h2>Approaching Vehicles</h2>
+                        <p>Select a vehicle to view its location on the map.</p>
+                    </div>
+
+                    <i class="fa-solid fa-bus-simple"></i>
+                </div>
+
+                <div class="vehicle-list" id="vehicleList">
+                    <!-- Vehicle cards are generated by script.js -->
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- =====================================
+             FIND ANOTHER RIDE
+        ====================================== -->
+
+        <section class="search-again-card">
+
+            <div class="search-again-icon">
+                <i class="fa-solid fa-magnifying-glass-location"></i>
+            </div>
+
+            <div class="search-again-text">
+                <h3>Looking for another bus stop?</h3>
+
+                <p>
+                    Select another destination to see approaching vehicles.
+                </p>
+            </div>
+
+            <button class="search-again-button" id="searchAgainButton">
+                Find Another Ride
+            </button>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================
+         FOOTER
+    ====================================== -->
+
+    <footer class="footer">
+
+        <div class="footer-brand">
+            <i class="fa-solid fa-bus"></i>
+            KATSVTAP
+        </div>
+
+        <p>Smart Vehicle Tracking for Katsina State.</p>
+
+        <p class="copyright">
+            &copy; <span id="currentYear"></span>
+            KATSVTAP. All rights reserved.
+        </p>
+
+    </footer>
+
+
+
+    <!-- =====================================
+         LOADING OVERLAY
+    ====================================== -->
+
+    <div class="loading-overlay hidden" id="loadingOverlay">
+
+        <div class="loading-card">
+
+            <div class="loading-spinner"></div>
+
+            <h3>Finding approaching vehicles</h3>
+
+            <p id="loadingMessage">
+                Checking vehicles near your bus stop...
+            </p>
+
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="loadingProgressBar"></div>
+            </div>
+
+            <span class="loading-time">
+                Please wait a moment
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         SIGN-IN MODAL
+    ====================================== -->
+
+    <div class="modal-overlay" id="signInModal">
+
+        <div class="modal-card">
+
+            <button class="modal-close" id="closeSignIn"
+                    aria-label="Close sign in">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-logo">
+                <i class="fa-solid fa-bus"></i>
+            </div>
+
+            <h2>Welcome Back</h2>
+
+            <p>Sign in to your KATSVTAP account.</p>
+
+            <form id="signInForm">
+
+                <label for="email">Email Address</label>
+
+                <input type="email"
+                       id="email"
+                       placeholder="Enter your email"
+                       required>
+
+                <label for="password">Password</label>
+
+                <input type="password"
+                       id="password"
+                       placeholder="Enter your password"
+                       required>
+
+                <button type="submit" class="find-button modal-submit">
+                    Sign In
+                </button>
+
+            </form>
+
+            <p class="signin-note">
+                Frontend demonstration only.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+
+    <!-- LEAFLET JAVASCRIPT -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- CUSTOM JAVASCRIPT -->
+    <script src="script.js"></script>
+
+</body>
+</html>
